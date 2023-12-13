@@ -66,9 +66,9 @@ def download_drive_file(classroom_service, file_id, folder_path, credentials):
 
         if 'mimeType' in file_metadata and 'application/vnd.google-apps' in file_metadata['mimeType']:
             request.uri = f"https://www.googleapis.com/drive/v3/files/{file_id}/export?mimeType=application/pdf"
-            file_path = os.path.join(folder_path, f"{file_id}_{file_metadata['name']}.pdf")
+            file_path = os.path.join(folder_path, f"{file_metadata['name']}.pdf")
         else:
-            file_path = os.path.join(folder_path, f"{file_id}_{file_metadata['name']}")
+            file_path = os.path.join(folder_path, f"{file_metadata['name']}")
 
 
         with open(file_path, 'wb') as file:
@@ -94,7 +94,8 @@ def main():
     for course in courses:
         course_id = course['id']
         course_name = course['name']
-        folder_path = os.path.join('./coursefiles/', f"{course_name}_{course_id}")
+        foldername = course_name.replace(":"," ")
+        folder_path = os.path.join('./coursefiles/', f"{foldername}")
         print(f"Downloading course: {course_name} ({course_id})")
         download_course_details(classroom_service, course_id, folder_path, credentials)
         print("Download completed.")
