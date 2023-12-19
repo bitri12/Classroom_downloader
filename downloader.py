@@ -1,8 +1,8 @@
 import os
+import getch
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
-import io
 from google.oauth2.credentials import Credentials
 from googleapiclient.errors import HttpError
 
@@ -84,7 +84,7 @@ def download_drive_file(classroom_service, file_id, folder_path, credentials):
     except Exception as e:
         print(f"Error: {e}")
 
-def main():
+def noPrompt():
     credentials = authenticate()
 
     classroom_service = build('classroom', 'v1', credentials=credentials)
@@ -100,5 +100,38 @@ def main():
         download_course_details(classroom_service, course_id, folder_path, credentials)
         print("Download completed.")
 
+def usePrompt():
+    credentials = authenticate()
+
+    classroom_service = build('classroom', 'v1', credentials=credentials)
+
+    courses = classroom_service.courses().list().execute().get('courses', [])
+
+    for course in courses:
+        course_id = course['id']
+        course_name = course['name']
+        foldername = course_name.replace(":"," ")
+        folder_path = os.path.join('./coursefiles/', f"{foldername}")
+        choix = ""
+        while True:
+            print(f"Do you want to download {course_name} ? [Y/N] ")
+            choix = getch.getch()
+            if choix.lower() in ["y", "o","n"]:
+                break
+        if choix.lower() in ["y","o"]:
+            print(f"Downloading course: {course_name} ({course_id})")
+            download_course_details(classroom_service, course_id, folder_path, credentials)
+            print("Download completed.")
+
+def main():
+    while True:
+        print("Do you want to be prompted before downloading each Classroom ? [Y/N] ")
+        choix = getch.getch()
+        if choix.lower() in ["y", "o"]:
+            usePrompt()
+            break
+        elif choix.lower() == "n":
+            noPrompt()
+            break
 if __name__ == '__main__':
     main()
