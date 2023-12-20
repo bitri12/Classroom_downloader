@@ -10,7 +10,10 @@
 2. Install requirements using the following command:
    ```bash
     pip install -r requirements.txt
-3. Run the program:
+3. Install getch
+   ```bash
+   pip install getch
+4. Run the program:
    ```bash
     python downloader.py
 
